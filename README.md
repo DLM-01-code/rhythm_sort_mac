@@ -260,6 +260,7 @@ For questions and suggestions:
 **Sortify — your personal music sorting assistant!** 🎧
 
 Download link: https://drive.google.com/drive/folders/1GsCtwoVDWso1C6Q6y1lZdwJHbLK_TC_0?hl=ru
+
 Repository for Windows: https://github.com/DLM-01-code/rhythm_sort 
 
 # Russian
@@ -521,4 +522,5 @@ MP3, WAV, FLAC, AAC, OGG, M4A, OPUS, WMA, AIFF, APE, ALAC, WV, TTA и други
 ---
 
 Ссылка на скачивание: https://drive.google.com/drive/folders/1GsCtwoVDWso1C6Q6y1lZdwJHbLK_TC_0?hl=ru
+
 Репозиторий для Windows: https://github.com/DLM-01-code/rhythm_sort 
