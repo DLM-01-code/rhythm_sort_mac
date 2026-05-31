@@ -1,7 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-// Добавляем класс is-mac на body — используется в styles.css
-// для показа mac-titlebar-spacer под traffic lights
 document.addEventListener('DOMContentLoaded', () => {
   if (process.platform === 'darwin') {
     document.body.classList.add('is-mac');
@@ -9,12 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Folder selection
   selectFolder: () => ipcRenderer.invoke('dialog:selectFolder'),
   selectFolderWithPreview: () => ipcRenderer.invoke('dialog:selectFolderWithPreview'),
   selectFiles: () => ipcRenderer.invoke('dialog:selectFiles'),
-
-  // File system operations
   scanFolder: (folder) => ipcRenderer.invoke('fs:scanFolder', folder),
   readFileAsBuffer: (path) => ipcRenderer.invoke('fs:readFile', path),
   getFileUrl: (path) => ipcRenderer.invoke('fs:getFileUrl', path),
@@ -22,20 +17,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   checkFolderExists: (folderPath) => ipcRenderer.invoke('fs:checkFolderExists', folderPath),
   getDroppedPath: (filePath) => ipcRenderer.invoke('fs:getDroppedPath', filePath),
   getDesktopPath: () => ipcRenderer.invoke('fs:getDesktopPath'),
-
-  // File rename
   renameFile: (oldPath, newNameWithoutExt) => ipcRenderer.invoke('fs:renameFile', oldPath, newNameWithoutExt),
-
-  // ID3 Tag operations
   readTags: (filePath) => ipcRenderer.invoke('fs:readTags', filePath),
   updateTitle: (filePath, newTitle) => ipcRenderer.invoke('fs:updateTitle', filePath, newTitle),
   updateCover: (filePath, coverBase64) => ipcRenderer.invoke('fs:updateCover', filePath, coverBase64),
   updateCoverOnAccept: (targetFolder, fileName, coverBase64) => ipcRenderer.invoke('fs:updateCoverOnAccept', targetFolder, fileName, coverBase64),
-
-  // Broken files
   saveBrokenList: (folderPath, brokenFiles) => ipcRenderer.invoke('fs:saveBrokenList', folderPath, brokenFiles),
-
-  // Track operations
   acceptTrack: (src, targetFolder, mode) => ipcRenderer.invoke('fs:accept', src, targetFolder, mode),
   rejectTrack: (src, mode, rejectedFolder) => ipcRenderer.invoke('fs:reject', src, mode, rejectedFolder),
+  // Удаление папок — новые методы
+  trashFolder: (folderPath) => ipcRenderer.invoke('folder-browser:trash-folder', folderPath),
+  deleteFolder: (folderPath) => ipcRenderer.invoke('folder-browser:delete-folder', folderPath),
 });

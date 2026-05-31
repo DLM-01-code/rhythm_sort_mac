@@ -4,13 +4,22 @@ import { persist } from "zustand/middleware";
 export type Theme = "light" | "dark";
 export type AcceptMode = "copy" | "move";
 export type RejectMode = "none" | "move";
-export type VizMode = 
-  | "dual_waveform" 
-  | "rms_meter" 
-  | "aurora" 
-  | "vu_meter" 
-  | "lissajous" 
-  | "wave";
+export type VizMode =
+  | "dual_waveform"
+  | "rms_meter"
+  | "aurora"
+  | "vu_meter"
+  | "lissajous"
+  | "wave"
+  | "particle_flow"
+  | "dna_helix"
+  | "ink_drop"
+  | "city_lights"
+  | "neon_ring"
+  | "mirror_bars"
+  | "plasma"
+  | "oscilloscope";
+
 export type CoverApplyMode = "off" | "onAccept" | "onFolderLoad";
 
 interface SettingsState {
@@ -39,7 +48,6 @@ interface SettingsState {
     prevTrack: string;
     nextTrack: string;
   };
-
   set: <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => void;
   setKeys: (keys: Partial<SettingsState["keys"]>) => void;
   clearFolders: () => void;
@@ -73,7 +81,6 @@ export const useSettings = create<SettingsState>()(
         prevTrack: "KeyW",
         nextTrack: "KeyS",
       },
-
       set: (key, value) => set({ [key]: value }),
       setKeys: (keys) => set((state) => ({ keys: { ...state.keys, ...keys } })),
       clearFolders: () => set({ rejectedFolder: null, targetFolder: null }),

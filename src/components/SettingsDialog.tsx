@@ -229,12 +229,20 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className={selectContentClass}>
+                          <SelectItem value="particle_flow">✨ Particle Flow</SelectItem>
+                          <SelectItem value="dna_helix">🧬 DNA Helix</SelectItem>
+                          <SelectItem value="ink_drop">🖋 Ink Drop</SelectItem>
+                          <SelectItem value="city_lights">🌃 City Lights</SelectItem>
+                          <SelectItem value="neon_ring">💠 Neon Ring</SelectItem>
+                          <SelectItem value="mirror_bars">🪞 Mirror Bars</SelectItem>
+                          <SelectItem value="plasma">🔮 Plasma</SelectItem>
+                          <SelectItem value="oscilloscope">📟 Oscilloscope</SelectItem>
                           <SelectItem value="dual_waveform">🎛️ Dual Waveform</SelectItem>
                           <SelectItem value="rms_meter">📏 RMS Meter</SelectItem>
                           <SelectItem value="aurora">🌌 Aurora</SelectItem>
                           <SelectItem value="vu_meter">💡 VU Meter</SelectItem>
                           <SelectItem value="lissajous">🎯 Lissajous</SelectItem>
-                          <SelectItem value="wave">🌊 Wave (Low Profile)</SelectItem>
+                          <SelectItem value="wave">🌊 Wave</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Image, X, Upload, Trash2 } from "lucide-react";
+import { Image, Upload, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -23,103 +23,82 @@ export function CoverEditor({ currentCover, trackName, trackId, onSave, onClose 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = useCallback((file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please select an image file");
-      return;
-    }
-
+    if (!file.type.startsWith('image/')) { toast.error("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Image must be under 5MB"); return; }
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setPreview(result);
-    };
+    reader.onload = (e) => setPreview(e.target?.result as string);
     reader.readAsDataURL(file);
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
+    e.preventDefault(); setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFileSelect(file);
-    }
+    if (file) handleFileSelect(file);
   }, [handleFileSelect]);
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  }, []);
 
   const handleSave = useCallback(() => {
     onSave(trackId, preview);
-    toast.success(`Cover updated for: ${trackName}`);
     onClose();
-  }, [preview, trackId, trackName, onSave, onClose]);
+  }, [preview, trackId, onSave, onClose]);
 
-  const handleRemove = useCallback(() => {
-    setPreview(undefined);
-    toast.info(`Cover removed for: ${trackName}`);
-  }, [trackName]);
+  // Обрезаем длинное название — максимум 40 символов
+  const shortName = trackName.length > 40
+    ? trackName.slice(0, 37) + '...'
+    : trackName;
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent
+        className="max-w-sm"
+        // Фиксированная ширина — не растягивается от длинного названия
+        style={{ width: 420, maxWidth: '90vw' }}
+      >
         <DialogHeader>
-          <DialogTitle>Edit Cover - {trackName}</DialogTitle>
+          <DialogTitle
+            className="text-sm font-semibold truncate pr-6"
+            title={trackName}
+          >
+            Edit Cover — {shortName}
+          </DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4">
+
+        <div className="space-y-3">
           {/* Preview */}
           <div className="flex justify-center">
             {preview ? (
               <div className="relative group">
                 <img
                   src={preview}
-                  alt="Cover preview"
-                  className="w-48 h-48 rounded-lg object-cover shadow-lg"
+                  alt="Cover"
+                  className="w-40 h-40 rounded-lg object-cover shadow-lg"
                 />
                 <button
-                  onClick={handleRemove}
-                  className="absolute top-2 right-2 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setPreview(undefined)}
+                  className="absolute top-1.5 right-1.5 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <Trash2 className="w-4 h-4 text-white" />
+                  <Trash2 className="w-3.5 h-3.5 text-white" />
                 </button>
               </div>
             ) : (
-              <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
-                <Image className="w-12 h-12 text-muted-foreground" />
+              <div className="w-40 h-40 bg-muted rounded-lg flex items-center justify-center">
+                <Image className="w-10 h-10 text-muted-foreground" />
               </div>
             )}
           </div>
 
           {/* Drop zone */}
           <div
-            className={`
-              border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-              transition-all duration-200
-              ${isDragging 
-                ? "border-primary bg-primary/10" 
-                : "border-border hover:border-primary/50"
-              }
-            `}
+            className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-all ${
+              isDragging ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+            }`}
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
           >
-            <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
-              Click or drag image here
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              PNG, JPG, GIF up to 5MB
-            </p>
+            <Upload className="w-6 h-6 mx-auto mb-1.5 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">Click or drag image here</p>
+            <p className="text-xs text-muted-foreground/60 mt-0.5">PNG, JPG, GIF up to 5MB</p>
           </div>
 
           <input
@@ -127,20 +106,12 @@ export function CoverEditor({ currentCover, trackName, trackId, onSave, onClose 
             type="file"
             accept="image/*"
             className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleFileSelect(file);
-            }}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
           />
 
-          {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>
-              Save Cover
-            </Button>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={onClose}>Cancel</Button>
+            <Button size="sm" onClick={handleSave}>Save Cover</Button>
           </div>
         </div>
       </DialogContent>
